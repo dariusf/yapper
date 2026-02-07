@@ -53,7 +53,8 @@ const Tele = (function () {
     // text = text.sub(0, 4096 - suffix.length);
 
     const suffix = "(truncated) ...";
-    text = text.sub(suffix.length - 4096, suffix.length);
+    const MSG_LIMIT = 4096 / 4;
+    text = text.sub(suffix.length - MSG_LIMIT, suffix.length);
 
     return await bot.telegram.sendMessage(lastChatId, text, ...args);
   }
