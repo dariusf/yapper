@@ -86,7 +86,12 @@ const Tele = (function () {
 
     bot.command("restart", (ctx) => {
       if (!securityCheck(ctx)) return;
-      process.exit(1);
+      ctx.react("👍");
+      // this function has to return to ack the message,
+      // as telegram itself has some buffering for unacked messages
+      setTimeout(() => {
+        process.exit(1);
+      }, 1000);
     });
 
     bot.command("clear", (_) => {
