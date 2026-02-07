@@ -296,6 +296,9 @@ const Agent = (function () {
         response.params.update.sessionUpdate === "agent_message_chunk"
       ) {
         bufferText(txt);
+        if (textBuffer.length > 20) {
+          await Tele.sendMessage(flushBuffer());
+        }
       } else if (response.params.update.sessionUpdate === "tool_call") {
         // await Tele.sendMessage(flushBuffer());
         // const toolCallKind = response.params.update.toolCallId.split("-")[0];
