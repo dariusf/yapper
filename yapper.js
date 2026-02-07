@@ -79,6 +79,11 @@ const Tele = (function () {
       ctx.reply(`Seems okay? ${Agent.getStatus()}`);
     });
 
+    bot.command("flush", (ctx) => {
+      if (!securityCheck(ctx)) return;
+      Agent.forceUpdate();
+    });
+
     bot.command("restart", (ctx) => {
       if (!securityCheck(ctx)) return;
       process.exit(1);
@@ -206,6 +211,10 @@ const Agent = (function () {
     return msg;
   }
 
+  async function forceUpdate() {
+    await Tele.sendMessage(flushBuffer());
+  }
+
   // Helper to send JSON-RPC requests
   function sendRequest(method, params = {}) {
     const request = {
@@ -296,9 +305,6 @@ const Agent = (function () {
         response.params.update.sessionUpdate === "agent_message_chunk"
       ) {
         bufferText(txt);
-        if (textBuffer.length > 20) {
-          await Tele.sendMessage(flushBuffer());
-        }
       } else if (response.params.update.sessionUpdate === "tool_call") {
         // await Tele.sendMessage(flushBuffer());
         // const toolCallKind = response.params.update.toolCallId.split("-")[0];
@@ -386,6 +392,7 @@ ${response.error.data.details}`;
     startNewSession,
     toggleThinking,
     getStatus,
+    forceUpdate,
   };
 })();
 
