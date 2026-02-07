@@ -75,6 +75,11 @@ const Tele = (function () {
       ctx.reply(`Seems okay? ${Agent.getStatus()}`);
     });
 
+    bot.command("restart", (ctx) => {
+      if (!securityCheck(ctx)) return;
+      process.exit(1);
+    });
+
     bot.command("clear", (_) => {
       if (!securityCheck(ctx)) return;
       // ctx.reply("started over");

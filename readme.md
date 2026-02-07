@@ -7,5 +7,5 @@ npm install
 cd $YOUR_PROJECT
 export TELEGRAM_BOT_TOKEN=$YOUR_TOKEN
 export ALLOWED_USERNAME=$YOUR_TELEGRAM_USERNAME
-node yapper.js
+$YAPPER_PATH/start.sh node $YAPPER_PATH/yapper.js
 ```
