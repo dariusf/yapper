@@ -77,16 +77,28 @@ const Tele = (function () {
 
     bot.command("health", (ctx) => {
       if (!securityCheck(ctx)) return;
-      ctx.reply(`Seems okay? ${Agent.getStatus()}`);
+      lastChatId = ctx.chat.id;
+      ctx.reply(Agent.getStatus());
     });
 
     bot.command("flush", (ctx) => {
       if (!securityCheck(ctx)) return;
+      lastChatId = ctx.chat.id;
       Agent.forceUpdate();
     });
 
+    bot.command("stats", (ctx) => {
+      if (!securityCheck(ctx)) return;
+      lastChatId = ctx.chat.id;
+      // https://github.com/google-gemini/gemini-cli/issues/10955
+      Agent.sendPrompt("/stats");
+    });
+
+    // TODO plan mode
+
     bot.command("restart", (ctx) => {
       if (!securityCheck(ctx)) return;
+      lastChatId = ctx.chat.id;
       ctx.react("👍");
       // this function has to return to ack the message,
       // as telegram itself has some buffering for unacked messages
@@ -97,6 +109,7 @@ const Tele = (function () {
 
     bot.command("clear", (_) => {
       if (!securityCheck(ctx)) return;
+      lastChatId = ctx.chat.id;
       // ctx.reply("started over");
       Logger.log("COMMAND", "/clear");
       Agent.initSession();
@@ -113,11 +126,11 @@ const Tele = (function () {
       // console.log(`[MESSAGE]: ${JSON.stringify(ctx.chat, null, 2)}`);
       // console.log(`[MESSAGE]: ${JSON.stringify(ctx.message, null, 2)}`);
       if (!securityCheck(ctx)) return;
+      lastChatId = ctx.chat.id;
       // ctx.reply('Understood')
       ctx.react("👍");
       const msg = ctx.message.text;
       Logger.log("USER", msg);
-      lastChatId = ctx.chat.id;
       Agent.sendPrompt(msg);
     });
 
