@@ -98,14 +98,18 @@ const Tele = (function () {
       Agent.forceUpdate();
     });
 
-    // bot.command("stats", (ctx) => {
-    //   if (!securityCheck(ctx)) return;
-    //   lastChatId = ctx.chat.id;
-    //   // https://github.com/google-gemini/gemini-cli/issues/10955
-    //   Agent.sendPrompt("/stats");
-    // });
+    bot.command("stats", (ctx) => {
+      if (!securityCheck(ctx)) return;
+      lastChatId = ctx.chat.id;
+      // TODO https://github.com/google-gemini/gemini-cli/issues/10955
+      Agent.sendPrompt("/stats");
+    });
 
-    // TODO plan mode
+    // TODO plan mode https://github.com/google-gemini/gemini-cli/issues/18321
+
+    // TODO run commands https://agentclientprotocol.com/protocol/terminals
+
+    // TODO multiple projects
 
     bot.command("restart", (ctx) => {
       if (!securityCheck(ctx)) return;
@@ -151,7 +155,7 @@ const Tele = (function () {
         // before the edit can take place
         await ctx.editMessageReplyMarkup(undefined);
         Logger.log("USER_ACTION", "proceed_always");
-        // this does not seem to work in gemini
+        // TODO this does not seem to work properly in gemini
         Agent.sendToolCallResponse("proceed_always");
         ctx.answerCbQuery("Allowing always");
       } catch (e) {
@@ -223,7 +227,7 @@ const Agent = (function () {
 
   let messageId = 1;
 
-  // -s doesn't work with this?
+  // TODO -s doesn't work with this?
   const gemini = spawn("gemini", ["--experimental-acp"]);
   gemini.on("error", (err) => {
     console.error(`[ERROR] Failed to spawn gemini process: ${err.message}`);
@@ -304,6 +308,7 @@ const Agent = (function () {
     console.log(`[AGENT -> CLIENT]:`, JSON.stringify(response, null, 2));
 
     // simple state machine for handshake
+    // https://agentclientprotocol.com/protocol/initialization
     if (response.result && response.id === 1) {
       // response to `initialize`
       sendRequest("authenticate", {
@@ -326,7 +331,6 @@ const Agent = (function () {
       }
     } else if (response.method === "session/update") {
       const txt = response.params.update.content.text;
-      // TODO this may be a tool call
       if (response.params.update.sessionUpdate === "agent_thought_chunk") {
         if (thinking) {
           bufferText(txt);
@@ -339,12 +343,16 @@ const Agent = (function () {
         // await Tele.sendMessage(flushBuffer());
         // const toolCallKind = response.params.update.toolCallId.split("-")[0];
         // const title = response.params.update.title;
-        // await Tele.sendMessage(`Tool: ${toolCallKind} ${title}`);
+        // const msg = `Tool: ${toolCallKind} ${title}`
+        // // await Tele.sendMessage(msg);
+        // Logger.log("AGENT (TOOL)", msg);
       } else if (response.params.update.sessionUpdate === "tool_call_update") {
         // await Tele.sendMessage(flushBuffer());
         // const toolCallKind = response.params.update.toolCallId.split("-")[0];
         // const status = response.params.update.status;
-        // await Tele.sendMessage(`Tool: ${toolCallKind} ${status}`);
+        // const msg = `Tool: ${toolCallKind} ${status}`;
+        // // await Tele.sendMessage(msg);
+        // Logger.log("AGENT (TOOL UPDATE)", msg);
       } else {
         console.log("session/update message not handled yet");
       }
