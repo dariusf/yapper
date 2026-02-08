@@ -49,12 +49,15 @@ const Tele = (function () {
     // avoid 400 message too long. we could also send
     // multiple messages but that seems unnecessary.
 
-    // const suffix = "... (truncated)";
-    // text = text.sub(0, 4096 - suffix.length);
-
-    const suffix = "(truncated) ...";
-    const MSG_LIMIT = 4096 / 4;
-    text = text.sub(suffix.length - MSG_LIMIT, suffix.length);
+    const MSG_LIMIT = 4096;
+    if (text.length > MSG_LIMIT) {
+      const divider = "\n\n...\n\n";
+      const l = Math.floor((MSG_LIMIT - divider) / 2);
+      text =
+        text.substring(0, l) +
+        divider +
+        text.substring(text.length - l, text.length);
+    }
 
     return await bot.telegram.sendMessage(lastChatId, text, ...args);
   }
