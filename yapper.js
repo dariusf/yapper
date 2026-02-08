@@ -118,10 +118,10 @@ const Tele = (function () {
       }, 1000);
     });
 
-    bot.command("clear", (_) => {
+    bot.command("clear", (ctx) => {
       if (!securityCheck(ctx)) return;
       lastChatId = ctx.chat.id;
-      // ctx.reply("started over");
+      ctx.react("👍");
       Logger.log("COMMAND", "/clear");
       Agent.initSession();
     });
