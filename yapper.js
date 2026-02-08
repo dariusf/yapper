@@ -342,8 +342,8 @@ const Agent = (function () {
       }
     } else if (response?.result?.stopReason === "end_turn") {
       const fullMessage = flushBuffer();
-      await Tele.sendMessage(fullMessage);
       Logger.log("AGENT", fullMessage);
+      await Tele.sendMessage(fullMessage);
       console.log("-------------");
     } else if (response.method === "session/request_permission") {
       lastToolCallId = response.id;
