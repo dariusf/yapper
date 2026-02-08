@@ -78,6 +78,14 @@ const Tele = (function () {
     // bot.on(message("sticker"), (ctx) => ctx.reply("👍"));
     // bot.hears("hi", (ctx) => ctx.reply("Hey there"));
 
+    bot.telegram.setMyCommands([
+      { command: "health", description: "Get agent status" },
+      { command: "flush", description: "Force update buffered messages" },
+      // { command: "stats", description: "Get usage statistics" },
+      { command: "restart", description: "Restart the agent" },
+      { command: "clear", description: "Clear the current session" },
+    ]);
+
     bot.command("health", (ctx) => {
       if (!securityCheck(ctx)) return;
       lastChatId = ctx.chat.id;
@@ -90,12 +98,12 @@ const Tele = (function () {
       Agent.forceUpdate();
     });
 
-    bot.command("stats", (ctx) => {
-      if (!securityCheck(ctx)) return;
-      lastChatId = ctx.chat.id;
-      // https://github.com/google-gemini/gemini-cli/issues/10955
-      Agent.sendPrompt("/stats");
-    });
+    // bot.command("stats", (ctx) => {
+    //   if (!securityCheck(ctx)) return;
+    //   lastChatId = ctx.chat.id;
+    //   // https://github.com/google-gemini/gemini-cli/issues/10955
+    //   Agent.sendPrompt("/stats");
+    // });
 
     // TODO plan mode
 
